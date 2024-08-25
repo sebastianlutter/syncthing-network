@@ -1,0 +1,19 @@
+
+services:
+
+  syncthing:
+    image: syncthing/syncthing
+    restart: unless-stopped
+    ports:
+      - "8384:8384"
+      - "22000:22000"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - PCAP=cap_chown,cap_fowner+ep
+    hostname: lunet-backup
+    network_mode: host
+    volumes:
+      - "./data:/var/syncthing"
