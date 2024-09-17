@@ -2,30 +2,18 @@ version: '3'
 
 services:
 
-  # relay is only needed when two instances
-  # need to communicate and both are behind NAT
-#  syncthing-relay-discovery:
-#    image: t4skforce/syncthing-relay-discovery:latest
-#    environment:
-#      RELAY_OPTS: '-debug'
-#      DISC_OPTS: '-debug'
-#    ports:
-#      - 22067:22067
-#      - 22026:22026
-#    deploy:
-#      labels:
-#        - "traefik.enable=true"
-#        - "traefik.docker.network=public-gateway"
-#        - "traefik.constraint-label=public-gateway"
-#        - "traefik.http.routers.syncthing-relay.entrypoints=https"
-#        - "traefik.http.routers.syncthing-relay.rule=Host(`relay.sebastianlutter.de`)"
-#        - "traefik.http.routers.syncthing-relay.tls=true"
-#        - "traefik.http.routers.syncthing-relay.tls.certresolver=myresolver"
-#        - "traefik.http.services.syncthing-relay.loadbalancer.server.port=22067"
-#        - "traefik.http.middlewares.syncthing-relay-auth.basicauth.users=${USERNAME}:${HASHED_PASSWORD}"
-#        - "traefik.http.routers.syncthing-relay.middlewares=syncthing-relay-auth"
-#    networks:
-#      - public-gateway
+
+  syncthing-relay:
+    image: syncthing/relay:latest
+    restart: unless-stopped
+    environment:
+      RELAY_OPTS: '-pools="" -debug'
+    ports:
+      - 22067:22067
+      - 22070:22070 # Management interface (if needed)
+    networks:
+      - public-gateway
+
 
   lunet-discosrv:
     image: syncthing/discosrv:1.27
@@ -63,7 +51,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      #- PCAP=cap_chown,cap_fowner+ep
+      - PCAP=cap_chown,cap_fowner+ep
       - STGUIADDRESS=0.0.0.0:8384
     hostname: lunet-upstream
     volumes:
@@ -81,7 +69,7 @@ services:
         - "traefik.docker.network=public-gateway"
         - "traefik.constraint-label=public-gateway"
         - "traefik.http.routers.syncthing.entrypoints=https"
-        - "traefik.http.routers.syncthing.rule=Host(`sync.sebastianlutter.de`)"
+        - "traefik.http.routers.syncthing.rule=Host(`sync.${DOMAIN}`)"
         - "traefik.http.routers.syncthing.tls=true"
         - "traefik.http.routers.syncthing.tls.certresolver=myresolver"
         - "traefik.http.services.syncthing.loadbalancer.server.port=8384"
