@@ -24,4 +24,4 @@ fi
 NODE_ID=$(docker info -f '{{.Swarm.NodeID}}')
 docker node update --label-add data.certificates=true $NODE_ID
 # deploy/update the stack
-docker stack deploy --with-registry-auth -c docker-compose.yaml syncthing-network
+docker stack deploy --with-registry-auth -c docker-compose.yaml ${STACK_NAME}
