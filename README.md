@@ -1,3 +1,7 @@
 # SyncThing network
 
-Build a own backup network application
+A private syncthing network on Docker Swarm using traefik.
+
+See also https://github.com/sebastianlutter/traefik-public-gateway
+
+
